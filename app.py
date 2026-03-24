@@ -20,12 +20,14 @@ import os
 
 db_url = os.environ.get('DATABASE_URL')
 
-if db_url and db_url.startswith("postgres://"):
+if not db_url:
+    db_url = "sqlite:///investment.db"
+
+if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db = SQLAlchemy(app)
 # ---------------- MODEL ----------------
 class Investment(db.Model):
