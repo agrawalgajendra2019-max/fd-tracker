@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FD Dashboard</title>
+
+    <!-- ✅ VERY IMPORTANT FOR MOBILE -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial;
+            font-size: 18px;
+            margin: 10px;
+        }
+
+        .navbar {
+            background: #333;
+            padding: 10px;
+        }
+
+        .navbar a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .summary {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 900px; /* ✅ keeps table readable */
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background: #f2f2f2;
+        }
+
+        .table-container {
+            overflow-x: auto; /* ✅ enables horizontal scroll on phone */
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔷 NAVBAR -->
+<div class="navbar">
+    <a href="/">📊 Dashboard</a>
+    <a href="/test">➕ Add FD</a>
+</div>
+
+<h2>FD Dashboard</h2>
+
+<!-- 🔷 SUMMARY -->
+<div class="summary">
+    <b>Total Invested:</b> {{total_invested}} |
+    <b>Total Maturity:</b> {{total_maturity}} |
+    <b>Active:</b> {{active_count}} |
+    <b>Closed:</b> {{closed_count}}
+</div>
+
+<!-- 🔷 FILTERS -->
+<div class="summary">
+    <a href="/investments">All</a> |
+    <a href="/investments?filter=active">Active</a> |
+    <a href="/investments?filter=matured">Matured</a> |
+    <a href="/investments?filter=closed">Closed</a> |
+    <a href="/export">Export CSV</a>
+</div>
+
+<!-- 🔷 TABLE -->
+<div class="table-container">
+<table>
+    <tr>
+        <th>S.No</th>
+        <th>FD Number</th>
+        <th>Bank</th>
+        <th>Start Date</th>
+        <th>Maturity Date</th>
+        <th>Principal</th>
+        <th>Maturity</th>
+        <th>Interest %</th>
+        <th>Status</th>
+        <th>Goal</th>
+        <th>Receipt</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for i in data %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ i.fd_number }}</td>
+        <td>{{ i.bank_name }}</td>
+        <td>{{ i.start_date }}</td>
+        <td>{{ i.maturity_date }}</td>
+        <td>{{ i.invested_amount }}</td>
+        <td>{{ i.maturity_amount }}</td>
+        <td>{{ i.interest_rate }}</td>
+
+        <td>
+            {% if maturity_status(i) == "Matured" %}
+                🔴 Matured
+            {% elif maturity_status(i) == "Maturing Soon" %}
+                🟡 Soon
+            {% elif maturity_status(i) == "Closed" %}
+                ⚫ Closed
+            {% else %}
+                🟢 Active
+            {% endif %}
+        </td>
+
+        <td>{{ i.goal }}</td>
+
+        <td>
+            {% if i.receipt_file %}
+                <a href="/uploads/{{i.receipt_file}}" target="_blank">View</a>
+            {% else %}
+                -
+            {% endif %}
+        </td>
+        <td>
+            <a href="/edit/{{i.id}}">Edit</a> |
+            <a href="/delete/{{i.id}}" onclick="return confirm('Delete this FD?')">Delete</a> |
+            {% if not i.is_closed %}
+                <a href="/close/{{i.id}}">Close</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+
+<!-- 🔷 BANK SUMMARY -->
+<h3>Bank-wise Summary</h3>
+{% for k,v in bank_summary.items() %}
+    {{k}} : {{v}} <br>
+{% endfor %}
+
+</body>
+</html>

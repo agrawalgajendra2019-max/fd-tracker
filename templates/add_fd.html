@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add FD</title>
+
+    <!-- ✅ MOBILE FIX -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial;
+            font-size: 18px;
+            margin: 10px;
+        }
+
+        .navbar {
+            background: #333;
+            padding: 10px;
+        }
+
+        .navbar a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            background: green;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <a href="/">📊 Dashboard</a>
+    <a href="/test">➕ Add FD</a>
+</div>
+
+<h2>Add FD</h2>
+
+<form method="POST" action="{{ '/edit/' + fd.id|string if fd else '/add_investment' }}">
+
+    Bank:
+    <input name="bank_name" value="{{fd.bank_name if fd else ''}}">
+
+    FD Number:
+    <input name="fd_number" value="{{fd.fd_number if fd else ''}}">
+
+    Start Date:
+    <input type="date" name="start_date" value="{{ fd.start_date if fd and fd.start_date else '' }}">
+
+    Amount:
+   <input name="invested_amount" value="{{fd.invested_amount if fd else ''}}">
+
+    Interest Rate:
+    <input name="interest_rate" value="{{fd.interest_rate if fd else ''}}">
+
+    Maturity Date:
+    <input type="date" name="maturity_date" value="{{ fd.maturity_date if fd and fd.maturity_date else '' }}">
+
+    Maturity Amount:
+    <input name="maturity_amount" value="{{fd.maturity_amount if fd else ''}}">
+
+    Goal:
+    <input name="goal" value="{{fd.goal if fd else ''}}">
+
+    Notes:
+    <input name="notes" value="{{fd.notes if fd else ''}}">
+
+    FD Receipt:
+    <input type="file" name="receipt">
+
+    <button type="submit">Save FD</button>
+
+</form>
+
+</body>
+</html>
