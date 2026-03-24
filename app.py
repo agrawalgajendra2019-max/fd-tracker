@@ -16,6 +16,7 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
 import os
 
 db_url = os.environ.get('DATABASE_URL')
@@ -28,6 +29,12 @@ if db_url.startswith("postgres://"):
 
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# ✅ ADD THIS LINE (VERY IMPORTANT)
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    "connect_args": {"sslmode": "require"}
+}
+
 db = SQLAlchemy(app)
 # ---------------- MODEL ----------------
 class Investment(db.Model):
