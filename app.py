@@ -331,5 +331,34 @@ def logout():
     session.clear()
     return redirect('/login')
 
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
+
+
+# 🔐 ADD HERE
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    global PASSWORD
+
+    if request.method == 'POST':
+        current = request.form.get('current_password')
+        new = request.form.get('new_password')
+
+        if not check_password_hash(PASSWORD, current):
+            return "❌ Current password incorrect"
+
+        PASSWORD = generate_password_hash(new)
+        return "✅ Password changed successfully"
+
+    return render_template("change_password.html")
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 if __name__ == '__main__':
     app.run(debug=True)
