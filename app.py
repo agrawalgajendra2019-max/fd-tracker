@@ -4,6 +4,7 @@ from datetime import datetime, date
 import csv
 from io import StringIO
 from flask import send_from_directory
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # ✅ NEW (for file upload)
 import os
@@ -37,12 +38,12 @@ db = SQLAlchemy(app)
 from flask import session, redirect, request, render_template
 
 USERNAME = "admin"
-PASSWORD = "1234"
+PASSWORD = "scrypt:32768:8:1$ti4MKlnAZmKgKGgt$4208dba8fbdfef3781b9747f0c1474e18c53249a0f8dbff5e1c5491ea64f18cabaf8a48c81034b3d5dffd0452bf9be6d89e975bf17b4f9a11883236012a1737b"
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if request.form['username'] == USERNAME and request.form['password'] == PASSWORD:
+        if request.form['username'] == USERNAME and check_password_hash(PASSWORD, request.form['password']):
             session['logged_in'] = True
             return redirect('/investments')
         else:
