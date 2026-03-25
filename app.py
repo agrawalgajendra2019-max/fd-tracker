@@ -22,6 +22,9 @@ import os
 
 db_url = os.environ.get('DATABASE_URL')
 
+if not db_url:
+    db_url = "sqlite:///investment.db"
+
 if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://")
 
