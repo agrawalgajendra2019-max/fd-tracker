@@ -356,16 +356,17 @@ def logout():
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
-    global PASSWORD
+    user = User.query.filter_by(username="admin").first()
 
     if request.method == 'POST':
         current = request.form.get('current_password')
         new = request.form.get('new_password')
 
-        if not check_password_hash(PASSWORD, current):
+        if not check_password_hash(user.password, current):
             return "❌ Current password incorrect"
 
-        PASSWORD = generate_password_hash(new)
+        user.password = generate_password_hash(new)
+        db.session.commit()
         return "✅ Password changed successfully"
 
     return render_template("change_password.html")
