@@ -3,37 +3,82 @@
 <head>
     <title>FD Dashboard</title>
 
-    <!-- ✅ VERY IMPORTANT FOR MOBILE -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
         body {
             font-family: Arial;
-            font-size: 18px;
-            margin: 10px;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 10px;
         }
 
+        h2 {
+            margin-top: 10px;
+        }
+
+        /* NAVBAR */
         .navbar {
             background: #333;
             padding: 10px;
+            border-radius: 8px;
         }
 
         .navbar a {
             color: white;
             margin-right: 15px;
             text-decoration: none;
-            font-size: 16px;
         }
 
-        .summary {
+        /* TOP ACTIONS */
+        .top-actions {
             margin-top: 10px;
-            margin-bottom: 10px;
+        }
+
+        .top-actions a {
+            margin-right: 10px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        /* CARDS */
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .card h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .card p {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 5px 0 0;
+        }
+
+        /* TABLE */
+        .table-container {
+            overflow-x: auto;
         }
 
         table {
             border-collapse: collapse;
             width: 100%;
-            min-width: 900px; /* ✅ keeps table readable */
+            min-width: 900px;
+            background: white;
+            border-radius: 10px;
         }
 
         th, td {
@@ -43,12 +88,19 @@
         }
 
         th {
+            background: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
             background: #f2f2f2;
         }
 
-        .table-container {
-            overflow-x: auto; /* ✅ enables horizontal scroll on phone */
-        }
+        /* STATUS COLORS */
+        .active { color: green; font-weight: bold; }
+        .matured { color: red; font-weight: bold; }
+        .soon { color: orange; font-weight: bold; }
+        .closed { color: black; font-weight: bold; }
     </style>
 </head>
 
@@ -60,17 +112,35 @@
     <a href="/test">➕ Add FD</a>
 </div>
 
-<a href="/logout" style="float:right;">🚪 Logout</a>
-<a href="/change_password">🔐 Change Password</a>
+<!-- 🔷 TOP ACTIONS -->
+<div class="top-actions">
+    <a href="/logout">🚪 Logout</a>
+    <a href="/change_password">🔐 Change Password</a>
+</div>
 
-<h2>FD Dashboard</h2>
+<h2>📊 FD Dashboard</h2>
 
-<!-- 🔷 SUMMARY -->
-<div class="summary">
-    <b>Total Invested:</b> {{total_invested}} |
-    <b>Total Maturity:</b> {{total_maturity}} |
-    <b>Active:</b> {{active_count}} |
-    <b>Closed:</b> {{closed_count}}
+<!-- 🔷 SUMMARY CARDS -->
+<div class="card-container">
+    <div class="card">
+        <h4>Total Invested</h4>
+        <p>{{total_invested}}</p>
+    </div>
+
+    <div class="card">
+        <h4>Total Maturity</h4>
+        <p>{{total_maturity}}</p>
+    </div>
+
+    <div class="card">
+        <h4>Active</h4>
+        <p>{{active_count}}</p>
+    </div>
+
+    <div class="card">
+        <h4>Closed</h4>
+        <p>{{closed_count}}</p>
+    </div>
 </div>
 
 <!-- 🔷 FILTERS -->
@@ -113,13 +183,13 @@
 
         <td>
             {% if maturity_status(i) == "Matured" %}
-                🔴 Matured
+                <span class="matured">🔴 Matured</span>
             {% elif maturity_status(i) == "Maturing Soon" %}
-                🟡 Soon
+                <span class="soon">🟡 Soon</span>
             {% elif maturity_status(i) == "Closed" %}
-                ⚫ Closed
+                <span class="closed">⚫ Closed</span>
             {% else %}
-                🟢 Active
+                <span class="active">🟢 Active</span>
             {% endif %}
         </td>
 
@@ -132,6 +202,7 @@
                 -
             {% endif %}
         </td>
+
         <td>
             <a href="/edit/{{i.id}}">Edit</a> |
             <a href="/delete/{{i.id}}" onclick="return confirm('Delete this FD?')">Delete</a> |
