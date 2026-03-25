@@ -55,12 +55,14 @@ def login():
 
     return render_template('login.html')
 
+from functools import wraps
+
 def login_required(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         if not session.get('logged_in'):
             return redirect('/login')
         return func(*args, **kwargs)
-    wrapper.__name__ = func.__name__
     return wrapper
 # ---------------- MODEL ----------------
 class Investment(db.Model):
