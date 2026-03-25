@@ -120,6 +120,22 @@
 
 <h2>📊 FD Dashboard</h2>
 
+<div style="margin:10px 0;">
+
+    {% if matured_count > 0 %}
+        <div style="color:red; font-weight:bold;">
+            🔴 {{matured_count}} FD(s) already matured
+        </div>
+    {% endif %}
+
+    {% if soon_count > 0 %}
+        <div style="color:orange; font-weight:bold;">
+            ⚠️ {{soon_count}} FD(s) maturing within 7 days
+        </div>
+    {% endif %}
+
+</div>
+
 <!-- 🔷 SUMMARY CARDS -->
 <div class="card-container">
     <div class="card">

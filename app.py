@@ -182,6 +182,24 @@ def investments():
     filter_type = request.args.get('filter', 'all')
     all_data = Investment.query.all()
 
+    from datetime import date
+
+    today = date.today()
+
+    matured_count = 0
+    soon_count = 0
+
+    for i in data:
+        if i.is_closed:
+            continue
+
+        days_left = (i.maturity_date - today).days
+
+        if days_left < 0:
+            matured_count += 1
+        elif days_left <= 7:
+            soon_count += 1
+
     def match(i):
         s = maturity_status(i)
         if filter_type == 'active':
