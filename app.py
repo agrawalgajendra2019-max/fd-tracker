@@ -38,6 +38,30 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 }
 
 db = SQLAlchemy(app)
+
+from flask import session, redirect, request, render_template
+
+USERNAME = "admin"
+PASSWORD = "1234"
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if request.form['username'] == USERNAME and request.form['password'] == PASSWORD:
+            session['logged_in'] = True
+            return redirect('/investments')
+        else:
+            return "Invalid credentials"
+
+    return render_template('login.html')
+
+def login_required(func):
+    def wrapper(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect('/login')
+        return func(*args, **kwargs)
+    wrapper.__name__ = func.__name__
+    return wrapper
 # ---------------- MODEL ----------------
 class Investment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -181,7 +205,6 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/')
-@login_required
 def home():
     return redirect('/login')
 
@@ -302,29 +325,7 @@ def export():
         headers={"Content-Disposition": "attachment;filename=fd_full_report.csv"}
     )
 
-from flask import session, redirect, request, render_template
 
-USERNAME = "admin"
-PASSWORD = "1234"
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        if request.form['username'] == USERNAME and request.form['password'] == PASSWORD:
-            session['logged_in'] = True
-            return redirect('/investments')
-        else:
-            return "Invalid credentials"
-
-    return render_template('login.html')
-
-def login_required(func):
-    def wrapper(*args, **kwargs):
-        if not session.get('logged_in'):
-            return redirect('/login')
-        return func(*args, **kwargs)
-    wrapper.__name__ = func.__name__
-    return wrapper
 
 
 @app.route('/logout')
