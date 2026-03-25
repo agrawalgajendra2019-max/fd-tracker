@@ -21,7 +21,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 import os
 
-db_url = os.environ.get('DATABASE_URL')
+db_url = "sqlite:///investment.db"
 
 if not db_url:
     db_url = "sqlite:///investment.db"
