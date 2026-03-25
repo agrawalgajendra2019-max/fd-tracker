@@ -183,7 +183,7 @@ def uploaded_file(filename):
 @app.route('/')
 @login_required
 def home():
-    return redirect('/investments')
+    return redirect('/login')
 
 @app.route('/delete/<int:id>')
 @login_required
