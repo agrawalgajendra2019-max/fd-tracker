@@ -332,10 +332,7 @@ def logout():
     return redirect('/login')
 
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect('/login')
+
 
 
 # 🔐 ADD HERE
@@ -360,5 +357,3 @@ def change_password():
 if __name__ == '__main__':
     app.run(debug=True)
 
-if __name__ == '__main__':
-    app.run(debug=True)
