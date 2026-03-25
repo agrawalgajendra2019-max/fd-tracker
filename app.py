@@ -367,7 +367,8 @@ def change_password():
 
         user.password = generate_password_hash(new)
         db.session.commit()
-        return "✅ Password changed successfully"
+        session.clear()
+        return redirect('/login')
 
     return render_template("change_password.html")
 
