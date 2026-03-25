@@ -43,7 +43,9 @@ PASSWORD = "scrypt:32768:8:1$ti4MKlnAZmKgKGgt$4208dba8fbdfef3781b9747f0c1474e18c
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if request.form['username'] == USERNAME and check_password_hash(PASSWORD, request.form['password']):
+        user = User.query.filter_by(username=request.form['username']).first()
+
+        if user and check_password_hash(user.password, request.form['password']):
             session['logged_in'] = True
             return redirect('/investments')
         else:
@@ -61,6 +63,12 @@ def login_required(func):
         return func(*args, **kwargs)
     return wrapper
 # ---------------- MODEL ----------------
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(200))
+
+
 class Investment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
@@ -89,6 +97,15 @@ class Investment(db.Model):
 with app.app_context():
     db.create_all()
 
+    # create default user if not exists
+    if not User.query.filter_by(username="admin").first():
+        from werkzeug.security import generate_password_hash
+        user = User(
+            username="admin",
+            password=generate_password_hash("1234")
+        )
+        db.session.add(user)
+        db.session.commit()
 
 # ---------------- HELPERS ----------------
 def days_remaining(maturity_date):
