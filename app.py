@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
+app.secret_key = "mysecret123"
 
 # ✅ NEW (upload config)
 UPLOAD_FOLDER = 'uploads'
@@ -88,12 +89,14 @@ def maturity_status(i):
 
 # ---------------- ADD FD ----------------
 @app.route('/test')
+@login_required
 def test_form():
     return render_template("add_fd.html", fd=None)
 
 
 
 @app.route('/add_investment', methods=['POST'])
+@login_required
 def add_investment():
     file = request.files.get('receipt')
 
@@ -135,6 +138,7 @@ def add_investment():
 
 # ---------------- DASHBOARD ----------------
 @app.route('/investments')
+@login_required
 def investments():
     filter_type = request.args.get('filter', 'all')
     all_data = Investment.query.all()
@@ -177,10 +181,12 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/')
+@login_required
 def home():
     return redirect('/investments')
 
 @app.route('/delete/<int:id>')
+@login_required
 def delete_fd(id):
     fd = Investment.query.get_or_404(id)
 
@@ -191,6 +197,7 @@ def delete_fd(id):
 
 
 @app.route('/close/<int:id>')
+@login_required
 def close_fd(id):
     fd = Investment.query.get_or_404(id)
 
@@ -204,6 +211,7 @@ def close_fd(id):
 
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_fd(id):
     fd = Investment.query.get_or_404(id)
 
@@ -293,6 +301,36 @@ def export():
         mimetype="text/csv",
         headers={"Content-Disposition": "attachment;filename=fd_full_report.csv"}
     )
+
+from flask import session, redirect, request, render_template
+
+USERNAME = "admin"
+PASSWORD = "1234"
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if request.form['username'] == USERNAME and request.form['password'] == PASSWORD:
+            session['logged_in'] = True
+            return redirect('/investments')
+        else:
+            return "Invalid credentials"
+
+    return render_template('login.html')
+
+def login_required(func):
+    def wrapper(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect('/login')
+        return func(*args, **kwargs)
+    wrapper.__name__ = func.__name__
+    return wrapper
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
 
 if __name__ == '__main__':
     app.run(debug=True)
