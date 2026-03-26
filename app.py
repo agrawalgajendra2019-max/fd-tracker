@@ -224,6 +224,7 @@ def investments():
     total_invested = sum(i.invested_amount or 0 for i in all_data)
     total_maturity = sum(i.maturity_amount or 0 for i in all_data)
     total_interest = total_maturity - total_invested
+    net_worth = total_maturity
     active_count = sum(1 for i in all_data if maturity_status(i) == "Active")
     closed_count = sum(1 for i in all_data if maturity_status(i) == "Closed")
 
@@ -237,6 +238,7 @@ def investments():
         total_invested=total_invested,
         total_maturity=total_maturity,
         total_interest=total_interest,
+        net_worth=net_worth,
         active_count=active_count,
         closed_count=closed_count,
         maturity_status=maturity_status,
