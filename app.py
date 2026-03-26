@@ -5,6 +5,8 @@ import csv
 from io import StringIO
 from flask import send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
+import smtplib
+from email.mime.text import MIMEText
 
 # ✅ NEW (for file upload)
 import os
@@ -363,6 +365,26 @@ def export():
     )
 
 
+
+def send_email_alert(message):
+    sender = "gajendramanakshe@gmail.com"
+    password = "sbpg ynyr acvp madl"   # NOT normal password
+    receiver = "gajendramanakshe@gmail.com"
+
+    msg = MIMEText(message)
+    msg['Subject'] = "FD Alert 🚨"
+    msg['From'] = sender
+    msg['To'] = receiver
+
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender, password)
+        server.sendmail(sender, receiver, msg.as_string())
+        server.quit()
+        print("Email sent")
+    except Exception as e:
+        print("Email error:", e)
 
 
 @app.route('/logout')
