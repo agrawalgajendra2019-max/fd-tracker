@@ -179,21 +179,21 @@ def add_investment():
 @app.route('/investments')
 @login_required
 def investments():
-    data = Investment.query.all()
-
-    filter_type = request.args.get('filter', 'all')
     all_data = Investment.query.all()
 
-    from datetime import date
+    filter_type = request.args.get('filter', 'all')
 
     today = date.today()
 
     matured_count = 0
     soon_count = 0
 
-    for i in data:
+    for i in all_data:
         if i.is_closed:
             continue
+
+        if not i.maturity_date:
+            continue   # ✅ FIX (prevents crash)
 
         days_left = (i.maturity_date - today).days
 
@@ -231,7 +231,9 @@ def investments():
         active_count=active_count,
         closed_count=closed_count,
         maturity_status=maturity_status,
-        bank_summary=bank_summary
+        bank_summary=bank_summary,
+        matured_count=matured_count,   # ✅ FIX
+        soon_count=soon_count          # ✅ FIX
     )
 
 
