@@ -191,19 +191,24 @@ def investments():
     soon_count = 0
 
     for i in all_data:
-        if i.is_closed:
+        if not i.maturity_date:
+            i.days_left = "-"
+            i.status_display = "No Date"
             continue
 
-        if not i.maturity_date:
-            continue   # ✅ FIX (prevents crash)
-
         days_left = (i.maturity_date - today).days
+        i.days_left = days_left  # attach for UI
 
-        if days_left < 0:
+        if i.is_closed:
+            i.status_display = "Closed"
+        elif days_left < 0:
+            i.status_display = "Matured"
             matured_count += 1
         elif days_left <= 7:
+            i.status_display = "Maturing Soon"
             soon_count += 1
-
+        else:
+            i.status_display = "Active"
     def match(i):
         s = maturity_status(i)
         if filter_type == 'active':
@@ -218,6 +223,7 @@ def investments():
 
     total_invested = sum(i.invested_amount or 0 for i in all_data)
     total_maturity = sum(i.maturity_amount or 0 for i in all_data)
+    total_interest = total_maturity - total_invested
     active_count = sum(1 for i in all_data if maturity_status(i) == "Active")
     closed_count = sum(1 for i in all_data if maturity_status(i) == "Closed")
 
@@ -230,6 +236,7 @@ def investments():
         data=data,
         total_invested=total_invested,
         total_maturity=total_maturity,
+        total_interest=total_interest,
         active_count=active_count,
         closed_count=closed_count,
         maturity_status=maturity_status,
@@ -298,7 +305,7 @@ def edit_fd(id):
 
     return render_template("add_fd.html", fd=fd)
 # ---------------- EXPORT ----------------
-@app.route('/export')
+@app.route('/export-csv')
 def export():
     si = StringIO()
     cw = csv.writer(si)
@@ -361,7 +368,7 @@ def export():
     return Response(
         output,
         mimetype="text/csv",
-        headers={"Content-Disposition": "attachment;filename=fd_full_report.csv"}
+        headers={"Content-Disposition": "attachment;filename=TEST_FILE.csv"}
     )
 
 
