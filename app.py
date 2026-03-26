@@ -364,11 +364,12 @@ def export():
         cw.writerow([bank, amt])
 
     output = si.getvalue()
+    filename = f"fd_backup_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
 
     return Response(
         output,
         mimetype="text/csv",
-        headers={"Content-Disposition": "attachment;filename=TEST_FILE.csv"}
+        headers={"Content-Disposition": f"attachment;filename={filename}"}
     )
 
 
