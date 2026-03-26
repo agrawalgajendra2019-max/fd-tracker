@@ -179,6 +179,8 @@ def add_investment():
 @app.route('/investments')
 @login_required
 def investments():
+    data = Investment.query.all()
+
     filter_type = request.args.get('filter', 'all')
     all_data = Investment.query.all()
 
