@@ -190,6 +190,7 @@
         <th>Principal</th>
         <th>Maturity</th>
         <th>Interest %</th>
+        <th>Days Remaining</th>
         <th>Status</th>
         <th>Goal</th>
         <th>Receipt</th>
@@ -206,6 +207,7 @@
         <td>{{ i.invested_amount }}</td>
         <td>{{ i.maturity_amount }}</td>
         <td>{{ i.interest_rate }}</td>
+        <td>{{ i.days_left }}</td>
 
         <td>
             {% if maturity_status(i) == "Matured" %}
