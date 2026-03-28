@@ -3,38 +3,42 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date
 import csv
 from io import StringIO
-from flask import send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 import smtplib
 from email.mime.text import MIMEText
 
-# ✅ NEW (for file upload)
 import os
 from werkzeug.utils import secure_filename
-
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
 
-# ✅ NEW (upload config)
-UPLOAD_FOLDER = 'uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# ==============================
+# ✅ CLEAN PATH CONFIG (FIXED)
+# ==============================
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-import os
+# Create required folders safely
+instance_path = os.path.join(BASE_DIR, "instance")
+uploads_path = os.path.join(BASE_DIR, "uploads")
 
-db_url = "sqlite:///investment.db"
+os.makedirs(instance_path, exist_ok=True)
+os.makedirs(uploads_path, exist_ok=True)
 
-if not db_url:
-    db_url = "sqlite:///investment.db"
+# Database path (ONLY ONE PLACE)
+db_path = os.path.join(instance_path, "investment.db")
 
-if db_url.startswith("postgres://"):
-    db_url = db_url.replace("postgres://", "postgresql://")
+# Debug prints (VERY IMPORTANT)
+print("USING DB PATH:", db_path)
+print("DB exists:", os.path.exists(db_path))
 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+# Flask config
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+app.config['UPLOAD_FOLDER'] = uploads_path
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
+# Initialize DB
 db = SQLAlchemy(app)
 
 from flask import session, redirect, request, render_template
@@ -96,12 +100,12 @@ class Investment(db.Model):
 
     receipt_file = db.Column(db.String(200))
 
-with app.app_context():
-    db.create_all()
+if not os.path.exists(db_path):
+    print("Creating new database...")
 
-    # create default user if not exists
-    if not User.query.filter_by(username="admin").first():
-        from werkzeug.security import generate_password_hash
+    with app.app_context():
+        db.create_all()
+
         user = User(
             username="admin",
             password=generate_password_hash("1234")
