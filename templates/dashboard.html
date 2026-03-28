@@ -203,7 +203,13 @@
         <td>{{ i.fd_number }}</td>
         <td>{{ i.bank_name }}</td>
         <td>{{ i.start_date }}</td>
-        <td>{{ i.maturity_date }}</td>
+        <td>
+            {% if i.maturity_date %}
+            {{ i.maturity_date.strftime('%d-%m-%Y') }}
+            {% else %}
+        -
+            {% endif %}
+        </td>
         <td>{{ i.invested_amount }}</td>
         <td>{{ i.maturity_amount }}</td>
         <td>{{ i.interest_rate }}</td>

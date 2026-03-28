@@ -427,6 +427,15 @@ def change_password():
     return render_template("change_password.html")
 
 
+@app.route('/check-data')
+def check_data():
+    data = Investment.query.all()
+    output = ""
+    for i in data:
+        output += f"{i.fd_number} | {i.start_date} | {i.maturity_date} <br>"
+    return output
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 
