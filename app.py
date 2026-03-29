@@ -13,33 +13,21 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = "mysecret123"
 
-# ==============================
-# ✅ CLEAN PATH CONFIG (FIXED)
-# ==============================
+# ✅ Upload folder
+UPLOAD_FOLDER = "uploads"
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Create required folders safely
-instance_path = os.path.join(BASE_DIR, "instance")
-uploads_path = os.path.join(BASE_DIR, "uploads")
-
-os.makedirs(instance_path, exist_ok=True)
-os.makedirs(uploads_path, exist_ok=True)
-
-# Database path (ONLY ONE PLACE)
-db_path = os.path.join(instance_path, "investment.db")
-
-# Debug prints (VERY IMPORTANT)
-print("USING DB PATH:", db_path)
-print("DB exists:", os.path.exists(db_path))
-
-# Flask config
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
-app.config['UPLOAD_FOLDER'] = uploads_path
+# ✅ Supabase DB
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres.xvcvnrbdvzbycaqswrgv:Nagpurindiayavatmal1234@aws-1-ap-south-1.pooler.supabase.com:6543/postgres"
+# import os
+# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:YOUR_PASSWORD@db.xvcvnrbdvzbycaqswrgv.supabase.co:5432/postgres"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize DB
 db = SQLAlchemy(app)
+
 
 from flask import session, redirect, request, render_template
 
@@ -100,12 +88,38 @@ class Investment(db.Model):
 
     receipt_file = db.Column(db.String(200))
 
-if not os.path.exists(db_path):
-    print("Creating new database...")
 
-    with app.app_context():
-        db.create_all()
+# ==============================
+# ✅ HELPER FUNCTIONS (ADD HERE)
+# ==============================
 
+def days_remaining(maturity_date):
+    if not maturity_date:
+        return None
+    return (maturity_date - date.today()).days
+
+
+def maturity_status(i):
+    if i.is_closed:
+        return "Closed"
+    if not i.maturity_date:
+        return "No Date"
+
+    d = days_remaining(i.maturity_date)
+
+    if d < 0:
+        return "Matured"
+    elif d <= 7:
+        return "Maturing Soon"
+    else:
+        return "Active"
+
+# 🔥 CREATE TABLES IN SUPABASE (ALWAYS RUN ON START)
+with app.app_context():
+    db.create_all()
+
+    # create default user if not exists
+    if not User.query.filter_by(username="admin").first():
         user = User(
             username="admin",
             password=generate_password_hash("1234")
@@ -189,30 +203,17 @@ def investments():
 
     filter_type = request.args.get('filter', 'all')
 
-    today = date.today()
-
     matured_count = 0
     soon_count = 0
 
     for i in all_data:
-        if not i.maturity_date:
-            i.days_left = "-"
-            i.status_display = "No Date"
-            continue
+        i.days_left = days_remaining(i.maturity_date)
+        i.status_display = maturity_status(i)
 
-        days_left = (i.maturity_date - today).days
-        i.days_left = days_left  # attach for UI
-
-        if i.is_closed:
-            i.status_display = "Closed"
-        elif days_left < 0:
-            i.status_display = "Matured"
+        if i.status_display == "Matured":
             matured_count += 1
-        elif days_left <= 7:
-            i.status_display = "Maturing Soon"
+        elif i.status_display == "Maturing Soon":
             soon_count += 1
-        else:
-            i.status_display = "Active"
     def match(i):
         s = maturity_status(i)
         if filter_type == 'active':
@@ -260,7 +261,7 @@ def uploaded_file(filename):
 def home():
     return redirect('/login')
 
-@app.route('/delete/<int:id>')
+@app.route('/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_fd(id):
     fd = Investment.query.get_or_404(id)
@@ -405,9 +406,6 @@ def send_email_alert(message):
 def logout():
     session.clear()
     return redirect('/login')
-
-
-
 
 
 # 🔐 ADD HERE
