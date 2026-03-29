@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Income</title>
+</head>
+<body>
+
+<h2>Edit Income Entry</h2>
+
+<form method="POST">
+
+    <p>
+        <label>Date:</label><br>
+        <input type="date" name="date" value="{{ entry.date }}" required>
+    </p>
+
+    <p>
+        <label>Source:</label><br>
+        <select name="source">
+            <option value="clinic" {% if entry.source == 'clinic' %}selected{% endif %}>Clinic</option>
+            <option value="pharmacy" {% if entry.source == 'pharmacy' %}selected{% endif %}>Pharmacy</option>
+        </select>
+    </p>
+
+    <p>
+        <label>Mode:</label><br>
+        <select name="mode">
+            <option value="cash" {% if entry.mode == 'cash' %}selected{% endif %}>Cash</option>
+            <option value="upi" {% if entry.mode == 'upi' %}selected{% endif %}>UPI</option>
+        </select>
+    </p>
+
+    <p>
+        <label>Amount:</label><br>
+        <input type="number" step="0.01" name="amount" value="{{ entry.amount }}" required>
+    </p>
+
+    <p>
+        <label>Notes:</label><br>
+        <input type="text" name="notes" value="{{ entry.notes }}">
+    </p>
+
+    <button type="submit">Update Entry</button>
+
+</form>
+
+</body>
+</html>

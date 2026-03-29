@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Income Dashboard</title>
+</head>
+<body>
+
+<h2>Income Entries</h2>
+
+<a href="/income/add">➕ Add New Entry</a>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Date</th>
+        <th>Source</th>
+        <th>Mode</th>
+        <th>Amount</th>
+        <th>Notes</th>
+        <th>Action</th>
+    </tr>
+
+    {% for entry in entries %}
+    <tr>
+        <td>{{ entry.date }}</td>
+        <td>{{ entry.source }}</td>
+        <td>{{ entry.mode }}</td>
+        <td>{{ entry.amount }}</td>
+        <td>{{ entry.notes }}</td>
+        <td>
+            <a href="/income/edit/{{ entry.id }}">Edit</a> |
+            <a href="/income/delete/{{ entry.id }}">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+</body>
+
+<h3>Daily Summary</h3>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Date</th>
+        <th>Clinic</th>
+        <th>Pharmacy</th>
+        <th>Total</th>
+    </tr>
+
+    {% for d in daily_summary %}
+    <tr>
+        <td>{{ d.date }}</td>
+        <td>{{ d.clinic_total }}</td>
+        <td>{{ d.pharmacy_total }}</td>
+        <td>{{ d.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Monthly Summary</h3>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Year</th>
+        <th>Month</th>
+        <th>Clinic</th>
+        <th>Pharmacy</th>
+        <th>Total</th>
+    </tr>
+
+    {% for m in monthly_summary %}
+    <tr>
+        <td>{{ m.year }}</td>
+        <td>{{ m.month }}</td>
+        <td>{{ m.clinic_total }}</td>
+        <td>{{ m.pharmacy_total }}</td>
+        <td>{{ m.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Yearly Summary</h3>
+
+<table border="1" cellpadding="10">
+    <tr>
+        <th>Year</th>
+        <th>Clinic</th>
+        <th>Pharmacy</th>
+        <th>Total</th>
+    </tr>
+
+    {% for y in yearly_summary %}
+    <tr>
+        <td>{{ y.year }}</td>
+        <td>{{ y.clinic_total }}</td>
+        <td>{{ y.pharmacy_total }}</td>
+        <td>{{ y.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</html>

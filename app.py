@@ -10,8 +10,12 @@ from email.mime.text import MIMEText
 import os
 from werkzeug.utils import secure_filename
 
+
 app = Flask(__name__)
 app.secret_key = "mysecret123"
+
+from income.routes import income_bp
+app.register_blueprint(income_bp)
 
 # ✅ Upload folder
 UPLOAD_FOLDER = "uploads"
@@ -26,8 +30,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres.xvcvnrbdvzbycaqsw
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize DB
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
+from extensions import db
 
+db.init_app(app)
 
 from flask import session, redirect, request, render_template
 
@@ -437,6 +443,11 @@ def check_data():
         output += f"{i.fd_number} | {i.start_date} | {i.maturity_date} <br>"
     return output
 
+
+
+with app.app_context():
+    from income.models import IncomeEntry
+    db.create_all()
 
 if __name__ == '__main__':
     app.run(debug=True)
