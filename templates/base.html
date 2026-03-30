@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FD Tracker</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f7fb;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .navbar {
+            background: #333;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .navbar a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔷 NAVBAR -->
+<div class="navbar">
+    <a href="/investments">📊 Dashboard</a>
+    <a href="/test">➕ Add FD</a>
+    <a href="/income/">💰 Income</a>
+    <a href="/logout">🚪 Logout</a>
+</div>
+
+<hr>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>
