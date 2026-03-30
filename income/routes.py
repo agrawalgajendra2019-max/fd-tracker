@@ -2,12 +2,15 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from datetime import datetime
 from extensions import db
 from income.models import IncomeEntry
+from flask import session
+from app import login_required
 
 income_bp = Blueprint('income', __name__, url_prefix='/income')
 
 
 # 🔷 ADD INCOME
 @income_bp.route('/add', methods=['GET', 'POST'])
+@login_required
 def add_income():
     if request.method == 'POST':
         date = request.form['date']
@@ -38,6 +41,7 @@ from sqlalchemy import func, case, extract
 
 
 @income_bp.route('/')
+@login_required
 def income_list():
     entries = IncomeEntry.query.order_by(IncomeEntry.date.desc()).all()
 
@@ -76,6 +80,7 @@ def income_list():
 
 # 🔷 DELETE ENTRY
 @income_bp.route('/delete/<int:id>')
+@login_required
 def delete_income(id):
     entry = IncomeEntry.query.get_or_404(id)
     db.session.delete(entry)
@@ -83,6 +88,7 @@ def delete_income(id):
     return redirect(url_for('income.income_list'))
 
 @income_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
 def edit_income(id):
     entry = IncomeEntry.query.get_or_404(id)
 
