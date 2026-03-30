@@ -79,13 +79,16 @@ def income_list():
     )
 
 # 🔷 DELETE ENTRY
-@income_bp.route('/delete/<int:id>')
+@income_bp.route('/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_income(id):
-    entry = IncomeEntry.query.get_or_404(id)
-    db.session.delete(entry)
-    db.session.commit()
-    return redirect(url_for('income.income_list'))
+    entry = IncomeEntry.query.get(id)
+
+    if entry:
+        db.session.delete(entry)
+        db.session.commit()
+
+    return redirect('/income/')
 
 @income_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required

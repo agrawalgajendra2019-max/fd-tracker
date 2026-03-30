@@ -28,7 +28,11 @@
         <td>{{ entry.notes }}</td>
         <td>
             <a href="/income/edit/{{ entry.id }}">Edit</a> |
-            <a href="/income/delete/{{ entry.id }}">Delete</a>
+            <form action="/income/delete/{{ entry.id }}" method="POST" style="display:inline;">
+                <button type="submit" onclick="return confirm('Delete this entry?')">
+                    Delete
+                </button>
+            </form>
         </td>
     </tr>
     {% endfor %}
