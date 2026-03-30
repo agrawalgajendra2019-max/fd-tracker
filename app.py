@@ -260,8 +260,6 @@ from flask import session, redirect
 
 @app.route('/')
 def home():
-    if session.get('logged_in'):
-        return redirect('/investments')
     return redirect('/login')
 
 @app.route('/delete/<int:id>', methods=['POST'])
