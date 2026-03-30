@@ -6,6 +6,7 @@ from io import StringIO
 from werkzeug.security import generate_password_hash, check_password_hash
 import smtplib
 from email.mime.text import MIMEText
+from auth import login_required
 
 import os
 from werkzeug.utils import secure_filename
@@ -53,15 +54,7 @@ def login():
 
     return render_template('login.html')
 
-from functools import wraps
 
-def login_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if not session.get('logged_in'):
-            return redirect('/login')
-        return func(*args, **kwargs)
-    return wrapper
 # ---------------- MODEL ----------------
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
