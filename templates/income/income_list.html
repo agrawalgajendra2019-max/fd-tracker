@@ -1,14 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Income Dashboard</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>Income Entries</h2>
+{% block content %}
+
+<h2>💰 Income Entries</h2>
 
 <a href="/income/add">➕ Add New Entry</a>
 
+<br><br>
+
+<!-- 🔷 ENTRIES TABLE -->
 <table border="1" cellpadding="10">
     <tr>
         <th>Date</th>
@@ -32,12 +32,12 @@
         </td>
     </tr>
     {% endfor %}
-
 </table>
 
-</body>
+<br><br>
 
-<h3>Daily Summary</h3>
+<!-- 🔷 DAILY SUMMARY -->
+<h3>📅 Daily Summary</h3>
 
 <table border="1" cellpadding="10">
     <tr>
@@ -57,7 +57,10 @@
     {% endfor %}
 </table>
 
-<h3>Monthly Summary</h3>
+<br><br>
+
+<!-- 🔷 MONTHLY SUMMARY -->
+<h3>📆 Monthly Summary</h3>
 
 <table border="1" cellpadding="10">
     <tr>
@@ -79,7 +82,10 @@
     {% endfor %}
 </table>
 
-<h3>Yearly Summary</h3>
+<br><br>
+
+<!-- 🔷 YEARLY SUMMARY -->
+<h3>📊 Yearly Summary</h3>
 
 <table border="1" cellpadding="10">
     <tr>
@@ -98,4 +104,5 @@
     </tr>
     {% endfor %}
 </table>
-</html>
+
+{% endblock %}
