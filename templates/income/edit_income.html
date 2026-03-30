@@ -1,17 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Income</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-<h2>Edit Income Entry</h2>
+{% block content %}
+
+<h2>✏️ Edit Income Entry</h2>
 
 <form method="POST">
 
     <p>
         <label>Date:</label><br>
-        <input type="date" name="date" value="{{ entry.date }}" required>
+        <input type="date" name="date" value="{{ entry.date.strftime('%Y-%m-%d') }}" required>
     </p>
 
     <p>
@@ -44,5 +41,4 @@
 
 </form>
 
-</body>
-</html>
+{% endblock %}

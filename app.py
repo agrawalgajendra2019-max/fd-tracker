@@ -256,8 +256,12 @@ def investments():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+from flask import session, redirect
+
 @app.route('/')
 def home():
+    if session.get('logged_in'):
+        return redirect('/investments')
     return redirect('/login')
 
 @app.route('/delete/<int:id>', methods=['POST'])
