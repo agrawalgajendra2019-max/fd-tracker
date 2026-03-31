@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from datetime import datetime
+from datetime import datetime, date   # ✅ FIXED
 from extensions import db
 from income.models import IncomeEntry
 from flask import session
 from app import login_required
 import logging
+from sqlalchemy import func, case, extract
 
 income_bp = Blueprint('income', __name__, url_prefix='/income')
 
@@ -14,15 +15,15 @@ income_bp = Blueprint('income', __name__, url_prefix='/income')
 @login_required
 def add_income():
     if request.method == 'POST':
-        date = request.form['date']
+        date_val = request.form['date']
         source = request.form['source']
         mode = request.form['mode']
         amount = request.form['amount']
         notes = request.form['notes']
 
         new_entry = IncomeEntry(
-            user_id=1,  # temporary (will connect login later)
-            date=datetime.strptime(date, "%Y-%m-%d"),
+            user_id=1,
+            date=datetime.strptime(date_val, "%Y-%m-%d"),
             source=source,
             mode=mode,
             amount=float(amount),
@@ -38,19 +39,14 @@ def add_income():
 
 
 # 🔷 LIST ALL ENTRIES
-from sqlalchemy import func, case, extract
-
-
 @income_bp.route('/')
 @login_required
 def income_list():
 
     entries = IncomeEntry.query.order_by(IncomeEntry.date.desc()).all()
-
-    # 🔷 SAFETY (VERY IMPORTANT)
     entries = entries or []
 
-    # 🔷 SAFE CARD CALCULATIONS
+    # 🔷 CARDS
     total_income = sum((e.amount or 0) for e in entries)
     clinic_total = sum((e.amount or 0) for e in entries if e.source == 'clinic')
     pharmacy_total = sum((e.amount or 0) for e in entries if e.source == 'pharmacy')
@@ -67,7 +63,7 @@ def income_list():
         if e.date and safe_date(e.date) == today
     )
 
-    # 🔷 ENSURE SUMMARIES EXIST
+    # 🔷 EMPTY SUMMARIES (SAFE)
     daily_summary = []
     monthly_summary = []
     yearly_summary = []
@@ -86,29 +82,25 @@ def income_list():
 
 
 # 🔷 DELETE ENTRY
-import logging   # ✅ ensure this is at top of file
-
 @income_bp.route('/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_income(id):
     entry = IncomeEntry.query.get(id)
 
     if entry:
-        # ✅ LOG 1 — BEFORE DELETE
         logging.info(f"Income delete attempt: ID={id}, Amount={entry.amount}, Source={entry.source}")
 
         db.session.delete(entry)
         db.session.commit()
 
-        # ✅ LOG 2 — AFTER DELETE
         logging.info(f"Income deleted successfully: ID={id}")
-
     else:
-        # ✅ LOG 3 — NOT FOUND (VERY IMPORTANT)
         logging.warning(f"Income delete failed (not found): ID={id}")
 
     return redirect('/income/')
 
+
+# 🔷 EDIT ENTRY
 @income_bp.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_income(id):
