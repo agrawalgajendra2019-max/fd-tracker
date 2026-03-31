@@ -44,52 +44,34 @@ from sqlalchemy import func, case, extract
 @income_bp.route('/')
 @login_required
 def income_list():
+
     entries = IncomeEntry.query.order_by(IncomeEntry.date.desc()).all()
 
-    # 🔷 DAILY SUMMARY
-    daily_summary = db.session.query(
-        IncomeEntry.date,
-        func.sum(case((IncomeEntry.source == 'clinic', IncomeEntry.amount), else_=0)).label('clinic_total'),
-        func.sum(case((IncomeEntry.source == 'pharmacy', IncomeEntry.amount), else_=0)).label('pharmacy_total'),
-        func.sum(IncomeEntry.amount).label('total')
-    ).group_by(IncomeEntry.date).order_by(IncomeEntry.date.desc()).all()
+    # 🔷 SAFETY (VERY IMPORTANT)
+    entries = entries or []
 
-    # 🔷 MONTHLY SUMMARY
-    monthly_summary = db.session.query(
-        extract('year', IncomeEntry.date).label('year'),
-        extract('month', IncomeEntry.date).label('month'),
-        func.sum(case((IncomeEntry.source == 'clinic', IncomeEntry.amount), else_=0)).label('clinic_total'),
-        func.sum(case((IncomeEntry.source == 'pharmacy', IncomeEntry.amount), else_=0)).label('pharmacy_total'),
-        func.sum(IncomeEntry.amount).label('total')
-    ).group_by('year', 'month').order_by('year', 'month').all()
-
-    # 🔷 YEARLY SUMMARY
-    yearly_summary = db.session.query(
-        extract('year', IncomeEntry.date).label('year'),
-        func.sum(case((IncomeEntry.source == 'clinic', IncomeEntry.amount), else_=0)).label('clinic_total'),
-        func.sum(case((IncomeEntry.source == 'pharmacy', IncomeEntry.amount), else_=0)).label('pharmacy_total'),
-        func.sum(IncomeEntry.amount).label('total')
-    ).group_by('year').order_by('year').all()
-
-    # 🔷 CARD CALCULATIONS (SAFE)
-    # total_income = sum(e.amount for e in entries)
-    # clinic_total = sum(e.amount for e in entries if e.source == 'clinic')
-    # pharmacy_total = sum(e.amount for e in entries if e.source == 'pharmacy')
+    # 🔷 SAFE CARD CALCULATIONS
     total_income = sum((e.amount or 0) for e in entries)
     clinic_total = sum((e.amount or 0) for e in entries if e.source == 'clinic')
     pharmacy_total = sum((e.amount or 0) for e in entries if e.source == 'pharmacy')
 
     today = date.today()
+
+    def safe_date(d):
+        if not d:
+            return None
+        return d if isinstance(d, date) else d.date()
+
     today_income = sum(
         (e.amount or 0) for e in entries
-        if e.date and e.date.date() == today
+        if e.date and safe_date(e.date) == today
     )
-    today = date.today()
-    # today_income = sum(e.amount for e in entries if e.date == today)
-    today_income = sum(
-        e.amount for e in entries
-        if e.date and e.date.date() == today
-    )
+
+    # 🔷 ENSURE SUMMARIES EXIST
+    daily_summary = []
+    monthly_summary = []
+    yearly_summary = []
+
     return render_template(
         'income/income_list.html',
         entries=entries,
