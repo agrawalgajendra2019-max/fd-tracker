@@ -4,6 +4,7 @@ from extensions import db
 from income.models import IncomeEntry
 from flask import session
 from app import login_required
+import logging
 
 income_bp = Blueprint('income', __name__, url_prefix='/income')
 
@@ -79,14 +80,26 @@ def income_list():
     )
 
 # 🔷 DELETE ENTRY
+import logging   # ✅ ensure this is at top of file
+
 @income_bp.route('/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_income(id):
     entry = IncomeEntry.query.get(id)
 
     if entry:
+        # ✅ LOG 1 — BEFORE DELETE
+        logging.info(f"Income delete attempt: ID={id}, Amount={entry.amount}, Source={entry.source}")
+
         db.session.delete(entry)
         db.session.commit()
+
+        # ✅ LOG 2 — AFTER DELETE
+        logging.info(f"Income deleted successfully: ID={id}")
+
+    else:
+        # ✅ LOG 3 — NOT FOUND (VERY IMPORTANT)
+        logging.warning(f"Income delete failed (not found): ID={id}")
 
     return redirect('/income/')
 

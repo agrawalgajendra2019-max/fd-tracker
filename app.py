@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import smtplib
 from email.mime.text import MIMEText
 from auth import login_required
+import logging
 
 import os
 from werkzeug.utils import secure_filename
@@ -14,6 +15,12 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "mysecret123"
+
+logging.basicConfig(
+    filename='app.log',
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(message)s'
+)
 
 from income.routes import income_bp
 app.register_blueprint(income_bp)
@@ -44,6 +51,8 @@ PASSWORD = "scrypt:32768:8:1$ti4MKlnAZmKgKGgt$4208dba8fbdfef3781b9747f0c1474e18c
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        logging.info(f"Login attempt: {request.form.get('username')}")
+
         user = User.query.filter_by(username=request.form['username']).first()
 
         if user and check_password_hash(user.password, request.form['password']):
@@ -152,10 +161,10 @@ def test_form():
     return render_template("add_fd.html", fd=None)
 
 
-
 @app.route('/add_investment', methods=['POST'])
 @login_required
 def add_investment():
+
     file = request.files.get('receipt')
 
     filename = None
@@ -165,9 +174,13 @@ def add_investment():
 
     fd_number = request.form.get('fd_number')
 
-    # 🔴 STEP 3: DUPLICATE CHECK (ADD HERE)
+    # ✅ LOG 1 — FD ADD ATTEMPT
+    logging.info(f"FD add attempt: {fd_number}")
+
+    # 🔴 DUPLICATE CHECK
     existing = Investment.query.filter_by(fd_number=fd_number).first()
     if existing:
+        logging.warning(f"Duplicate FD blocked: {fd_number}")  # ✅ LOG 2
         return f"<h3>❌ FD Number {fd_number} already exists!</h3><a href='/test'>Go Back</a>"
 
     # ✅ NORMAL SAVE FLOW
@@ -192,7 +205,13 @@ def add_investment():
     db.session.add(inv)
     db.session.commit()
 
+    # ✅ LOG 3 — SUCCESS
+    logging.info(f"FD added successfully: {fd_number}")
+
     return redirect('/investments')
+
+
+
 
 # ---------------- DASHBOARD ----------------
 @app.route('/investments')
@@ -265,10 +284,17 @@ def home():
 @app.route('/delete/<int:id>', methods=['POST'])
 @login_required
 def delete_fd(id):
-    fd = Investment.query.get_or_404(id)
+    fd = Investment.query.get(id)
 
-    db.session.delete(fd)
-    db.session.commit()
+    if fd:
+        logging.info(f"FD delete attempt: ID={id}, FD={fd.fd_number}")
+
+        db.session.delete(fd)
+        db.session.commit()
+
+        logging.info(f"FD deleted successfully: ID={id}")
+    else:
+        logging.warning(f"FD delete failed (not found): ID={id}")
 
     return redirect('/investments')
 
