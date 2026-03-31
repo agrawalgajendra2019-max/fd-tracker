@@ -71,13 +71,26 @@ def income_list():
         func.sum(IncomeEntry.amount).label('total')
     ).group_by('year').order_by('year').all()
 
+    # 🔷 CARD CALCULATIONS (SAFE)
+    total_income = sum(e.amount for e in entries)
+    clinic_total = sum(e.amount for e in entries if e.source == 'clinic')
+    pharmacy_total = sum(e.amount for e in entries if e.source == 'pharmacy')
+
+    today = date.today()
+    today_income = sum(e.amount for e in entries if e.date == today)
+
     return render_template(
         'income/income_list.html',
         entries=entries,
         daily_summary=daily_summary,
         monthly_summary=monthly_summary,
-        yearly_summary=yearly_summary
+        yearly_summary=yearly_summary,
+        total_income=total_income,
+        clinic_total=clinic_total,
+        pharmacy_total=pharmacy_total,
+        today_income=today_income
     )
+
 
 # 🔷 DELETE ENTRY
 import logging   # ✅ ensure this is at top of file
