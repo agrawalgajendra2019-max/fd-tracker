@@ -470,6 +470,17 @@ with app.app_context():
     from income.models import IncomeEntry
     db.create_all()
 
+@app.errorhandler(404)
+def not_found_error(e):
+    logging.warning(f"404 Error: {request.url}")
+    return "<h2>❌ Page not found</h2><a href='/investments'>Go to Dashboard</a>", 404
+
+
+@app.errorhandler(500)
+def internal_error(e):
+    logging.error(f"500 Error: {str(e)}")
+    return "<h2>⚠️ Something went wrong. Please try again.</h2><a href='/investments'>Go to Dashboard</a>", 500
+
 if __name__ == '__main__':
     app.run(debug=True)
 
