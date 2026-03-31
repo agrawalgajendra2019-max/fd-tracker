@@ -484,11 +484,7 @@ def not_found_error(e):
 @app.errorhandler(500)
 def internal_error(e):
     import traceback
-    error_details = traceback.format_exc()
-
-    logging.error(f"500 ERROR:\n{error_details}")
-
-    return "<h2>⚠️ Something went wrong. Please try again.</h2>", 500
+    return f"<pre>{traceback.format_exc()}</pre>", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
