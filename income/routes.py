@@ -72,13 +72,24 @@ def income_list():
     ).group_by('year').order_by('year').all()
 
     # 🔷 CARD CALCULATIONS (SAFE)
-    total_income = sum(e.amount for e in entries)
-    clinic_total = sum(e.amount for e in entries if e.source == 'clinic')
-    pharmacy_total = sum(e.amount for e in entries if e.source == 'pharmacy')
+    # total_income = sum(e.amount for e in entries)
+    # clinic_total = sum(e.amount for e in entries if e.source == 'clinic')
+    # pharmacy_total = sum(e.amount for e in entries if e.source == 'pharmacy')
+    total_income = sum((e.amount or 0) for e in entries)
+    clinic_total = sum((e.amount or 0) for e in entries if e.source == 'clinic')
+    pharmacy_total = sum((e.amount or 0) for e in entries if e.source == 'pharmacy')
 
     today = date.today()
-    today_income = sum(e.amount for e in entries if e.date == today)
-
+    today_income = sum(
+        (e.amount or 0) for e in entries
+        if e.date and e.date.date() == today
+    )
+    today = date.today()
+    # today_income = sum(e.amount for e in entries if e.date == today)
+    today_income = sum(
+        e.amount for e in entries
+        if e.date and e.date.date() == today
+    )
     return render_template(
         'income/income_list.html',
         entries=entries,
