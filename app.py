@@ -476,10 +476,14 @@ def not_found_error(e):
     return "<h2>❌ Page not found</h2><a href='/investments'>Go to Dashboard</a>", 404
 
 
+# @app.errorhandler(500)
+# def internal_error(e):
+#     logging.error(f"500 Error: {str(e)}")
+#     return "<h2>⚠️ Something went wrong. Please try again.</h2><a href='/investments'>Go to Dashboard</a>", 500
+
 @app.errorhandler(500)
 def internal_error(e):
-    logging.error(f"500 Error: {str(e)}")
-    return "<h2>⚠️ Something went wrong. Please try again.</h2><a href='/investments'>Go to Dashboard</a>", 500
+    return f"<h2>REAL ERROR:</h2><pre>{str(e)}</pre>", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
