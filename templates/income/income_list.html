@@ -7,50 +7,56 @@
 <style>
 .card-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 10px;
-    margin: 15px 0;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
 }
 
 .card {
-    background: white;
-    padding: 12px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 15px;
+    border-radius: 12px;
+    color: white;
     text-align: center;
+    font-weight: bold;
 }
 
 .card h4 {
     margin: 0;
     font-size: 14px;
-    color: #555;
+    opacity: 0.9;
 }
 
 .card p {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 5px 0 0;
+    font-size: 20px;
+    margin-top: 5px;
 }
+
+/* Different colors */
+.total { background: #4CAF50; }
+.clinic { background: #2196F3; }
+.pharmacy { background: #FF9800; }
+.today { background: #9C27B0; }
+
 </style>
 
 <div class="card-container">
 
-    <div class="card">
+    <div class="card total">
         <h4>Total Income</h4>
         <p>₹ {{ total_income }}</p>
     </div>
 
-    <div class="card">
+    <div class="card clinic">
         <h4>Clinic</h4>
         <p>₹ {{ clinic_total }}</p>
     </div>
 
-    <div class="card">
+    <div class="card pharmacy">
         <h4>Pharmacy</h4>
         <p>₹ {{ pharmacy_total }}</p>
     </div>
 
-    <div class="card">
+    <div class="card today">
         <h4>Today</h4>
         <p>₹ {{ today_income }}</p>
     </div>
