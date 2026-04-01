@@ -64,9 +64,79 @@ def income_list():
     )
 
     # 🔷 EMPTY SUMMARIES (SAFE)
+    from collections import defaultdict
+
+    # DAILY SUMMARY
+    daily_data = defaultdict(lambda: {"clinic": 0, "pharmacy": 0})
+
+    for e in entries:
+        if not e.date:
+            continue
+
+        d = e.date.date() if hasattr(e.date, "date") else e.date
+
+        if e.source == 'clinic':
+            daily_data[d]["clinic"] += e.amount or 0
+        elif e.source == 'pharmacy':
+            daily_data[d]["pharmacy"] += e.amount or 0
+
     daily_summary = []
+    for d, val in daily_data.items():
+        daily_summary.append({
+            "date": d,
+            "clinic_total": val["clinic"],
+            "pharmacy_total": val["pharmacy"],
+            "total": val["clinic"] + val["pharmacy"]
+        })
+
+    # MONTHLY SUMMARY
+    monthly_data = defaultdict(lambda: {"clinic": 0, "pharmacy": 0})
+
+    for e in entries:
+        if not e.date:
+            continue
+
+        d = e.date.date() if hasattr(e.date, "date") else e.date
+        key = (d.year, d.month)
+
+        if e.source == 'clinic':
+            monthly_data[key]["clinic"] += e.amount or 0
+        elif e.source == 'pharmacy':
+            monthly_data[key]["pharmacy"] += e.amount or 0
+
     monthly_summary = []
+    for (year, month), val in monthly_data.items():
+        monthly_summary.append({
+            "year": year,
+            "month": month,
+            "clinic_total": val["clinic"],
+            "pharmacy_total": val["pharmacy"],
+            "total": val["clinic"] + val["pharmacy"]
+        })
+
+    # YEARLY SUMMARY
+    yearly_data = defaultdict(lambda: {"clinic": 0, "pharmacy": 0})
+
+    for e in entries:
+        if not e.date:
+            continue
+
+        d = e.date.date() if hasattr(e.date, "date") else e.date
+        year = d.year
+
+        if e.source == 'clinic':
+            yearly_data[year]["clinic"] += e.amount or 0
+        elif e.source == 'pharmacy':
+            yearly_data[year]["pharmacy"] += e.amount or 0
+
     yearly_summary = []
+    for year, val in yearly_data.items():
+        yearly_summary.append({
+            "year": year,
+            "clinic_total": val["clinic"],
+            "pharmacy_total": val["pharmacy"],
+            "total": val["clinic"] + val["pharmacy"]
+        })
 
     return render_template(
         'income/income_list.html',
@@ -118,3 +188,29 @@ def edit_income(id):
         return redirect(url_for('income.income_list'))
 
     return render_template('income/edit_income.html', entry=entry)
+
+import csv
+from flask import Response
+
+@income_bp.route('/export')
+@login_required
+def export_income():
+    entries = IncomeEntry.query.order_by(IncomeEntry.date.desc()).all()
+
+    def generate():
+        yield "Date,Source,Mode,Amount,Notes\n"
+
+        for e in entries:
+            date_str = e.date.strftime("%Y-%m-%d") if e.date else ""
+            source = e.source or ""
+            mode = e.mode or ""
+            amount = e.amount or 0
+            notes = (e.notes or "").replace(",", " ")  # avoid CSV break
+
+            yield f"{date_str},{source},{mode},{amount},{notes}\n"
+
+    return Response(
+        generate(),
+        mimetype='text/csv',
+        headers={"Content-Disposition": "attachment; filename=income.csv"}
+    )
