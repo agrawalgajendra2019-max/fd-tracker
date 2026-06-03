@@ -41,6 +41,29 @@
 .pharmacy { background: #FF9800; }
 .today { background: #9C27B0; }
 
+.summary-container{
+    display:flex;
+    gap:20px;
+    margin:20px 0;
+    align-items:flex-start;
+}
+
+.summary-box{
+    flex:1;
+    overflow:auto;
+}
+
+.summary-box table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+@media (max-width:768px){
+    .summary-container{
+        flex-direction:column;
+    }
+}
+
 </style>
 
 <div class="card-container">
