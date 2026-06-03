@@ -35,58 +35,124 @@
     margin-top: 5px;
 }
 
-/* Different colors */
 .total { background: #4CAF50; }
 .clinic { background: #2196F3; }
 .pharmacy { background: #FF9800; }
 .today { background: #9C27B0; }
 
-.summary-container{
-    display:flex;
-    gap:20px;
-    margin:20px 0;
-    align-items:flex-start;
+.summary-container {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+    align-items: flex-start;
 }
 
-.summary-box{
-    flex:1;
-    overflow:auto;
+.summary-box {
+    flex: 1;
+    overflow: auto;
 }
 
-.summary-box table{
-    width:100%;
-    border-collapse:collapse;
+.summary-box table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
-@media (max-width:768px){
-    .summary-container{
-        flex-direction:column;
+@media (max-width: 768px) {
+    .summary-container {
+        flex-direction: column;
     }
 }
-
 </style>
 
 <div class="card-container">
 
-    <div class="card total">
-        <h4>Total Income</h4>
-        <p>₹ {{ total_income }}</p>
-    </div>
+```
+<div class="card total">
+    <h4>Total Income</h4>
+    <p>₹ {{ total_income }}</p>
+</div>
 
-    <div class="card clinic">
-        <h4>Clinic</h4>
-        <p>₹ {{ clinic_total }}</p>
-    </div>
+<div class="card clinic">
+    <h4>Clinic</h4>
+    <p>₹ {{ clinic_total }}</p>
+</div>
 
-    <div class="card pharmacy">
-        <h4>Pharmacy</h4>
-        <p>₹ {{ pharmacy_total }}</p>
-    </div>
+<div class="card pharmacy">
+    <h4>Pharmacy</h4>
+    <p>₹ {{ pharmacy_total }}</p>
+</div>
 
-    <div class="card today">
-        <h4>Today</h4>
-        <p>₹ {{ today_income }}</p>
-    </div>
+<div class="card today">
+    <h4>Today</h4>
+    <p>₹ {{ today_income }}</p>
+</div>
+```
+
+</div>
+
+<div class="summary-container">
+
+```
+<div class="summary-box">
+    <h3>📅 Daily Summary</h3>
+
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Date</th>
+            <th>Clinic</th>
+            <th>Pharmacy</th>
+            <th>Total</th>
+        </tr>
+
+        {% for d in daily_summary %}
+        <tr>
+            <td>{{ d.date }}</td>
+            <td>{{ d.clinic_total }}</td>
+            <td>{{ d.pharmacy_total }}</td>
+            <td>{{ d.total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="summary-box">
+    <h3>📆 Monthly Summary</h3>
+
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Year</th>
+            <th>Month</th>
+            <th>Total</th>
+        </tr>
+
+        {% for m in monthly_summary %}
+        <tr>
+            <td>{{ m.year }}</td>
+            <td>{{ m.month }}</td>
+            <td>{{ m.total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="summary-box">
+    <h3>📊 Yearly Summary</h3>
+
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Year</th>
+            <th>Total</th>
+        </tr>
+
+        {% for y in yearly_summary %}
+        <tr>
+            <td>{{ y.year }}</td>
+            <td>{{ y.total }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+```
 
 </div>
 
@@ -94,7 +160,6 @@
 
 <br><br>
 
-<!-- 🔷 ENTRIES TABLE -->
 <table border="1" cellpadding="10">
     <tr>
         <th>Date</th>
@@ -105,94 +170,30 @@
         <th>Action</th>
     </tr>
 
-    {% for entry in entries %}
-    <tr>
-        <td>{{ entry.date }}</td>
-        <td>{{ entry.source }}</td>
-        <td>{{ entry.mode }}</td>
-        <td>{{ entry.amount }}</td>
-        <td>{{ entry.notes }}</td>
-        <td>
-            <a href="/income/edit/{{ entry.id }}">Edit</a> |
-            <form action="/income/delete/{{ entry.id }}" method="POST" style="display:inline;">
-                <button type="submit" onclick="return confirm('Delete this entry?')">
-                    Delete
-                </button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+```
+{% for entry in entries %}
+<tr>
+    <td>{{ entry.date }}</td>
+    <td>{{ entry.source }}</td>
+    <td>{{ entry.mode }}</td>
+    <td>{{ entry.amount }}</td>
+    <td>{{ entry.notes }}</td>
+    <td>
+        <a href="/income/edit/{{ entry.id }}">Edit</a> |
 
-<br><br>
+        <form action="/income/delete/{{ entry.id }}"
+              method="POST"
+              style="display:inline;">
+            <button type="submit"
+                    onclick="return confirm('Delete this entry?')">
+                Delete
+            </button>
+        </form>
+    </td>
+</tr>
+{% endfor %}
+```
 
-<!-- 🔷 DAILY SUMMARY -->
-<h3>📅 Daily Summary</h3>
-
-<table border="1" cellpadding="10">
-    <tr>
-        <th>Date</th>
-        <th>Clinic</th>
-        <th>Pharmacy</th>
-        <th>Total</th>
-    </tr>
-
-    {% for d in daily_summary %}
-    <tr>
-        <td>{{ d.date }}</td>
-        <td>{{ d.clinic_total }}</td>
-        <td>{{ d.pharmacy_total }}</td>
-        <td>{{ d.total }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
-<br><br>
-
-<!-- 🔷 MONTHLY SUMMARY -->
-<h3>📆 Monthly Summary</h3>
-
-<table border="1" cellpadding="10">
-    <tr>
-        <th>Year</th>
-        <th>Month</th>
-        <th>Clinic</th>
-        <th>Pharmacy</th>
-        <th>Total</th>
-    </tr>
-
-    {% for m in monthly_summary %}
-    <tr>
-        <td>{{ m.year }}</td>
-        <td>{{ m.month }}</td>
-        <td>{{ m.clinic_total }}</td>
-        <td>{{ m.pharmacy_total }}</td>
-        <td>{{ m.total }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
-<br><br>
-
-<!-- 🔷 YEARLY SUMMARY -->
-<h3>📊 Yearly Summary</h3>
-
-<table border="1" cellpadding="10">
-    <tr>
-        <th>Year</th>
-        <th>Clinic</th>
-        <th>Pharmacy</th>
-        <th>Total</th>
-    </tr>
-
-    {% for y in yearly_summary %}
-    <tr>
-        <td>{{ y.year }}</td>
-        <td>{{ y.clinic_total }}</td>
-        <td>{{ y.pharmacy_total }}</td>
-        <td>{{ y.total }}</td>
-    </tr>
-    {% endfor %}
 </table>
 
 {% endblock %}
