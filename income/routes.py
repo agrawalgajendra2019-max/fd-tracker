@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from datetime import datetime, date   # ✅ FIXED
+import pytz
 from extensions import db
 from income.models import IncomeEntry
 from flask import session
@@ -51,7 +52,8 @@ def income_list():
     clinic_total = sum((e.amount or 0) for e in entries if e.source == 'clinic')
     pharmacy_total = sum((e.amount or 0) for e in entries if e.source == 'pharmacy')
 
-    today = date.today()
+    india = pytz.timezone("Asia/Kolkata")
+    today = datetime.now(india).date()
 
     def safe_date(d):
         if not d:
