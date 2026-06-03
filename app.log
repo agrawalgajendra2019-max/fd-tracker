@@ -1,0 +1,20 @@
+2026-06-04 00:50:02,941 INFO [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-06-04 00:50:02,942 INFO [33mPress CTRL+C to quit[0m
+2026-06-04 00:50:02,942 INFO  * Restarting with stat
+2026-06-04 00:50:04,417 WARNING  * Debugger is active!
+2026-06-04 00:50:04,439 INFO  * Debugger PIN: 947-685-671
+2026-06-04 00:50:52,605 INFO 127.0.0.1 - - [04/Jun/2026 00:50:52] "[32mGET / HTTP/1.1[0m" 302 -
+2026-06-04 00:50:52,616 INFO 127.0.0.1 - - [04/Jun/2026 00:50:52] "GET /login HTTP/1.1" 200 -
+2026-06-04 00:50:53,083 WARNING 404 Error: http://127.0.0.1:5000/favicon.ico
+2026-06-04 00:50:53,083 INFO 127.0.0.1 - - [04/Jun/2026 00:50:53] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-06-04 00:50:58,899 INFO Login attempt: admin
+2026-06-04 00:50:59,292 INFO 127.0.0.1 - - [04/Jun/2026 00:50:59] "[32mPOST /login HTTP/1.1[0m" 302 -
+2026-06-04 00:50:59,541 INFO 127.0.0.1 - - [04/Jun/2026 00:50:59] "GET /investments HTTP/1.1" 200 -
+2026-06-04 00:51:02,916 INFO 127.0.0.1 - - [04/Jun/2026 00:51:02] "GET /income/ HTTP/1.1" 200 -
+2026-06-04 00:52:05,479 INFO 127.0.0.1 - - [04/Jun/2026 00:52:05] "GET /income/ HTTP/1.1" 200 -
+2026-06-04 00:52:17,438 INFO 127.0.0.1 - - [04/Jun/2026 00:52:17] "GET /income/add HTTP/1.1" 200 -
+2026-06-04 00:52:24,016 INFO 127.0.0.1 - - [04/Jun/2026 00:52:24] "GET /income/ HTTP/1.1" 200 -
+2026-06-04 00:55:44,153 INFO 127.0.0.1 - - [04/Jun/2026 00:55:44] "GET /income/ HTTP/1.1" 200 -
+2026-06-04 00:55:46,005 INFO 127.0.0.1 - - [04/Jun/2026 00:55:46] "GET /income/add HTTP/1.1" 200 -
+2026-06-04 00:55:49,201 INFO 127.0.0.1 - - [04/Jun/2026 00:55:49] "GET /income/ HTTP/1.1" 200 -

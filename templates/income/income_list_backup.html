@@ -8,12 +8,6 @@
     ⬇️ Export CSV
 </a>
 
-<br>
-
-<a href="/income/add" style="display:inline-block; margin:10px 0;">
-    ➕ Add New Entry
-</a>
-
 <style>
 .card-container {
     display: grid;
@@ -55,18 +49,12 @@
 
 .summary-box {
     flex: 1;
-    overflow-x: auto;
+    overflow: auto;
 }
 
 .summary-box table {
     width: 100%;
     border-collapse: collapse;
-}
-
-.summary-box th,
-.summary-box td {
-    text-align: center;
-    padding: 6px;
 }
 
 @media (max-width: 768px) {
@@ -134,8 +122,6 @@
         <tr>
             <th>Year</th>
             <th>Month</th>
-            <th>Clinic</th>
-            <th>Pharmacy</th>
             <th>Total</th>
         </tr>
 
@@ -143,8 +129,6 @@
         <tr>
             <td>{{ m.year }}</td>
             <td>{{ m.month }}</td>
-            <td>{{ m.clinic_total }}</td>
-            <td>{{ m.pharmacy_total }}</td>
             <td>{{ m.total }}</td>
         </tr>
         {% endfor %}
@@ -157,16 +141,12 @@
     <table border="1" cellpadding="5">
         <tr>
             <th>Year</th>
-            <th>Clinic</th>
-            <th>Pharmacy</th>
             <th>Total</th>
         </tr>
 
         {% for y in yearly_summary %}
         <tr>
             <td>{{ y.year }}</td>
-            <td>{{ y.clinic_total }}</td>
-            <td>{{ y.pharmacy_total }}</td>
             <td>{{ y.total }}</td>
         </tr>
         {% endfor %}
@@ -176,9 +156,11 @@
 
 </div>
 
+<a href="/income/add">➕ Add New Entry</a>
+
 <br><br>
 
-<table border="1" cellpadding="10" width="100%">
+<table border="1" cellpadding="10">
     <tr>
         <th>Date</th>
         <th>Source</th>

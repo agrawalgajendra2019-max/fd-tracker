@@ -3,7 +3,7 @@ from datetime import datetime, date   # ✅ FIXED
 from extensions import db
 from income.models import IncomeEntry
 from flask import session
-from app import login_required
+from auth import login_required
 import logging
 from sqlalchemy import func, case, extract
 
